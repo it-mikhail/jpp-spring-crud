@@ -13,23 +13,6 @@ import java.util.*;
 @Controller
 public class UserController {
 
-    final private String ROOT_MENU_URL = "/";
-
-    final private String USER_LIST_URL = "/user/list";
-
-    final private String USER_CREATE_FORM_URL = "/user/new";
-    final private String USER_UPDATE_FORM_URL = "/user/edit";
-
-    final private String USER_CREATE_ACTION_URL = "/user/save";
-    final private String USER_UPDATE_ACTION_URL = "/user/update";
-    final private String USER_DELETE_ACTION_URL = "/user/delete";
-
-    final private String ROOT_MENU_TEMPLATE = "index";
-
-    final private String USER_LIST_TEMPLATE = "userlist";
-    final private String USER_UPDATE_TEMPLATE = "useredit";
-    final private String USER_CREATE_TEMPLATE = USER_UPDATE_TEMPLATE;
-
     final private UserService userService;
 
     @Autowired
@@ -37,69 +20,69 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = ROOT_MENU_URL)
+    @GetMapping("/")
     public String printRootMenu(ModelMap model) {
         List<String> messages = new ArrayList<>();
         Map<String, String> menuMap = new LinkedHashMap<>();
 
-        menuMap.put("User List", USER_LIST_URL);
+        menuMap.put("User List", "/user/list");
         messages.add("Hello!");
 
         model.addAttribute("messages", messages);
         model.addAttribute("menuMap", menuMap);
 
-        return ROOT_MENU_TEMPLATE;
+        return "index";
     }
 
-    @GetMapping(value = USER_LIST_URL)
+    @GetMapping("/user/list")
     public String printUserList(ModelMap model) {
         model.addAttribute("userList", userService.getUserList());
-        model.addAttribute("userEditFormUrl", USER_UPDATE_FORM_URL);
-        model.addAttribute("userCreateFormUrl", USER_CREATE_FORM_URL);
-        model.addAttribute("userDeleteActionUrl", USER_DELETE_ACTION_URL);
+        model.addAttribute("userEditFormUrl", "/user/edit");
+        model.addAttribute("userCreateFormUrl", "/user/new");
+        model.addAttribute("userDeleteActionUrl", "/user/delete");
 
-        return USER_LIST_TEMPLATE;
+        return "userlist";
     }
 
-    @GetMapping(value = USER_CREATE_FORM_URL)
+    @GetMapping(value = "/user/new")
     public String printNewUserForm(ModelMap model) {
         model.addAttribute("pageTitle", "Create new user");
         model.addAttribute("formTitle", "New user data:");
-        model.addAttribute("formAction", USER_CREATE_ACTION_URL);
+        model.addAttribute("formAction", "/user/save");
         model.addAttribute("submitButtonText", "create");
         model.addAttribute("user", new User());
 
-        return USER_UPDATE_TEMPLATE;
+        return "useredit";
     }
 
-    @GetMapping(value = USER_UPDATE_FORM_URL + "/{id}")
+    @GetMapping(value = "/user/edit" + "/{id}")
     public String printEditUserForm(@PathVariable String id, ModelMap model) {
         model.addAttribute("pageTitle", "Edit user");
         model.addAttribute("formTitle", "User data:");
-        model.addAttribute("formAction", USER_UPDATE_ACTION_URL);
+        model.addAttribute("formAction", "/user/update");
         model.addAttribute("submitButtonText", "update");
         model.addAttribute("user", userService.getUserById(Integer.parseInt(id)));
         model.addAttribute("showUserId", "true");
 
-        return USER_UPDATE_TEMPLATE;
+        return "useredit";
     }
 
-    @GetMapping(value = USER_DELETE_ACTION_URL + "/{id}")
+    @GetMapping(value = "/user/delete" + "/{id}")
     public String deleteUser(@PathVariable String id, ModelMap model) {
-        userService.delete(Integer.parseInt(id));
-        return "redirect:" + USER_LIST_URL;
+        userService.delete(userService.getUserById(Integer.parseInt(id)));
+        return "redirect:" + "/user/list";
     }
 
-    @RequestMapping(value = USER_CREATE_ACTION_URL, method = RequestMethod.POST)
+    @RequestMapping(value = "/user/save", method = RequestMethod.POST)
     public String createNewUser(@ModelAttribute("user") User newUser, ModelMap model) {
         userService.add(newUser);
-        return "redirect:" + USER_LIST_URL;
+        return "redirect:" + "/user/list";
     }
 
-    @RequestMapping(value = USER_UPDATE_ACTION_URL, method = RequestMethod.POST)
+    @RequestMapping(value = "/user/update", method = RequestMethod.POST)
     public String updateUser(@ModelAttribute("user") User user, ModelMap model) {
         userService.update(user);
-        return "redirect:" + USER_LIST_URL;
+        return "redirect:" + "/user/list";
     }
 
 }

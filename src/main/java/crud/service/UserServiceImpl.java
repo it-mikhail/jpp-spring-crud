@@ -32,8 +32,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void delete(int userId) {
-        userDao.delete(userId);
+    public void delete(User user) {
+        userDao.delete(user);
     }
 
     @Transactional
